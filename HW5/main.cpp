@@ -5,517 +5,299 @@
 //  Created by Fahed on 4/19/16.
 //  Copyright © 2016 Fahed. All rights reserved.
 //
+
+//Had a lot of help from abdul, worked with a few partners and a lot of googling
+
 #include <iostream>
-#include <stack>
+#include <cstdlib>
 #include <fstream>
 #include <string>
-#include <time.h>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 
-void read_file(char * file_name, int * A[]);
-
-void bubble_sort(int A[], int n);
-
-void insertion_sort(int A[], int n);
-
-int partition(int A[], int low, int high);
-void sswap(int * x, int * y);
-void quick_sort(int A[], int low, int high);
-
-void shell_sort(int A[], int n);
-
+void Bubble_Sort(int A[], int n);
+void Insertion_Sort(int A[], int n);
+void swap(int &x, int &y);
+int partition(int a[], int left, int right, int pivotIndex);
+void Quick_Sort(int a[], int left, int right);
+void Shell_Sort(int A[], int n);
 void merge(int A[], int low, int high, int mid);
-void merge_sort(int A[], int low, int high);
+void Merge_Sort(int A[], int low, int high);
 
-int main()
-{
-    char choice;
-    int random[10000];  // creates int array size 10000 for random.txt
-    int reversed[10000];  // creates int array size 10000 for reversed.txt
-    int nearlySorted[10000];  // creates int array size 10000 for nearlysorted.txt
-    int fewUnique[10000];  // creates int array size 10000 for fewunique.txt
-    int temp[10000];  // creates int array size 10000 for temp purposes
-    ifstream in;  // ifstream for reading file
-    string line;  // string line to read segments of the txt files
-    clock_t t;  // clock for timing the sorts
-    
-    in.open("Random.txt");  // opens random.txt
-    if(in.is_open())  // confirms file is open
-    {
-        for(int i = 0; i < 10000; i++)  // for loop to read random.txt
-        {
-            getline(in, line, ' ');  // iterates through text file and reads each number as a string
-            random[i] = stoi(line);  // converts string to an int
-            line = "";
-        }
-    }
-    in.close();  // close file
-    
-    in.open("Reversed.txt");  // same as previous read file
-    if(in.is_open())
-    {
-        for(int i = 0; i < 10000; i++)
-        {
-            getline(in, line, ' ');
-            reversed[i] = stoi(line);
-            line = "";
-        }
-    }
-    in.close();
-    
-    in.open("NearlySorted.txt");  // same as previous read file
-    if(in.is_open())
-    {
-        for(int i = 0; i < 10000; i++)
-        {
-            getline(in, line, ' ');
-            nearlySorted[i] = stoi(line);
-            line = "";
-        }
-    }
-    in.close();
-    
-    in.open("FewUnique.txt");  // same as previous read file
-    if(in.is_open())
-    {
-        for(int i = 0; i < 10000; i++)
-        {
-            getline(in, line, ' ');
-            fewUnique[i] = stoi(line);
-            line = "";
-        }
-    }
-    in.close();
-    
-    do
-    {
-        cout << "Choose which sort to time \n";  // asks for user input
-        cout << "1. Bubble sort \n";
-        cout << "2. Insertion sort \n";
-        cout << "3. Quick sort \n";
-        cout << "4. Shell sort \n";
-        cout << "5. Merge sort \n";
-        cout << "0. To quit \n";
-        
-        cin >> choice;
-        while(choice < '0' || choice > '5')  // checks input is 0-5
-        {
-            cout << "Please enter int 0 to 5: ";
-            cin >> choice;
-        }
-        if(choice != '0')  // if choice is 0, breaks out, else preform switch statement
-        {
-            switch(choice)
-            {
-                case '1':  // case for bubble sort
-                    cout << "Preforming Bubble sort \n";
-                    cout << "	Time for Random.txt: ";  // sort for random
-                {
-                    for(int i = 0; i < 10000; i++)  // sets temp to random array
-                    {
-                        temp[i] = random[i];
-                    }
-                    t = clock();  // reads clock time
-                    bubble_sort(temp, 10000);  // preforms bubble sort on temp array
-                    t = clock() - t;  // reads clock time and subtracts previous clock time
-                    cout << (((float)t)/CLOCKS_PER_SEC) << "seconds\n";  // prints clock time in seconds
-                }
-                    cout << "	Time for Reversed.txt: ";  // same as previous
-                {
-                    for(int i = 0; i < 10000; i++)
-                    {
-                        temp[i] = reversed[i];
-                    }
-                    t = clock();
-                    bubble_sort(temp, 10000);
-                    t = clock() - t;
-                    cout << (((float)t)/CLOCKS_PER_SEC) << "seconds\n";
-                }
-                    cout << "	Time for NearlySorted.txt: ";  // same as previous
-                {
-                    for(int i = 0; i < 10000; i++)
-                    {
-                        temp[i] = nearlySorted[i];
-                    }
-                    t = clock();
-                    bubble_sort(temp, 10000);
-                    t = clock() - t;
-                    cout << (((float)t)/CLOCKS_PER_SEC) << "seconds\n";
-                }
-                    cout << "	Time for FewUnique.txt: ";  // same as previous
-                {
-                    for(int i = 0; i < 10000; i++)
-                    {
-                        temp[i] = fewUnique[i];
-                    }
-                    t = clock();
-                    bubble_sort(temp, 10000);
-                    t = clock() - t;
-                    cout << (((float)t)/CLOCKS_PER_SEC) << "seconds\n";
-                }
-                    break;
-                case '2':  // case for insertion sort
-                    cout << "Preforming Insertion sort \n";
-                    cout << "	Time for Random.txt: ";  // sort for random
-                {
-                    for(int i = 0; i < 10000; i++)  // sets temp to random array
-                    {
-                        temp[i] = random[i];
-                    }
-                    t = clock();  // reads clock time
-                    insertion_sort(temp, 10000);  // preforms insertion sort on temp
-                    t = clock() - t;  // calculates difference in clock time
-                    cout << (((float)t)/CLOCKS_PER_SEC) << "seconds\n";  // prints clock time in seconds
-                }
-                    cout << "	Time for Reversed.txt: ";  // same as previous
-                {
-                    for(int i = 0; i < 10000; i++)
-                    {
-                        temp[i] = reversed[i];
-                    }
-                    t = clock();
-                    insertion_sort(temp, 10000);
-                    t = clock() - t;
-                    cout << (((float)t)/CLOCKS_PER_SEC) << "seconds\n";
-                }
-                    cout << "	Time for NearlySorted.txt: ";  // same as previous
-                {
-                    for(int i = 0; i < 10000; i++)
-                    {
-                        temp[i] = nearlySorted[i];
-                    }
-                    t = clock();
-                    insertion_sort(temp, 10000);
-                    t = clock() - t;
-                    cout << (((float)t)/CLOCKS_PER_SEC) << "seconds\n";
-                }
-                    cout << "	Time for FewUnique.txt: ";  // same as previous
-                {
-                    for(int i = 0; i < 10000; i++)
-                    {
-                        temp[i] = fewUnique[i];
-                    }
-                    t = clock();
-                    insertion_sort(temp, 10000);
-                    t = clock() - t;
-                    cout << (((float)t)/CLOCKS_PER_SEC) << "seconds\n";
-                }
-                    break;
-                case '3':  // case for quick sort
-                    cout << "Preforming Quick sort \n";
-                    cout << "	Time for Random.txt: ";  // sort for random
-                {
-                    for(int i = 0; i < 10000; i++)  // sets temp array to random array
-                    {
-                        temp[i] = random[i];
-                    }
-                    t = clock();  // reads clock time
-                    quick_sort(temp, 0, 9999);  // quick sorts temp
-                    t = clock() - t;  // calculates difference in clock time
-                    cout << (((float)t)/CLOCKS_PER_SEC) << "seconds\n";  // prints clock time in seconds
-                }
-                    cout << "	Time for Reversed.txt: ";  // same as previous
-                {
-                    for(int i = 0; i < 10000; i++)
-                    {
-                        temp[i] = reversed[i];
-                    }
-                    t = clock();
-                    quick_sort(temp, 0, 9999);
-                    t = clock() - t;
-                    cout << (((float)t)/CLOCKS_PER_SEC) << "seconds\n";
-                }
-                    cout << "	Time for NearlySorted.txt: ";  // same as previous
-                {
-                    for(int i = 0; i < 10000; i++)
-                    {
-                        temp[i] = nearlySorted[i];
-                    }
-                    t = clock();
-                    quick_sort(temp, 0, 9999);
-                    t = clock() - t;
-                    cout << (((float)t)/CLOCKS_PER_SEC) << "seconds\n";
-                }
-                    cout << "	Time for FewUnique.txt: ";  // same as previous
-                {
-                    for(int i = 0; i < 10000; i++)
-                    {
-                        temp[i] = fewUnique[i];
-                    }
-                    t = clock();
-                    quick_sort(temp, 0, 9999);
-                    t = clock() - t;
-                    cout << (((float)t)/CLOCKS_PER_SEC) << "seconds\n";
-                }
-                    break;
-                case '4':  // case for shell sort
-                    cout << "Preforming Shell sort \n";
-                    cout << "	Time for Random.txt: ";  // shell sort for random
-                {
-                    for(int i = 0; i < 10000; i++)  // sets temp array to random array
-                    {
-                        temp[i] = random[i];
-                    }
-                    t = clock();  // reads clock time
-                    shell_sort(temp, 10000);  // shell sorts temp array
-                    t = clock() - t;  // calculates difference in clock time
-                    cout << (((float)t)/CLOCKS_PER_SEC) << "seconds\n";  // prints clock time in seconds
-                }
-                    cout << "	Time for Reversed.txt: ";  // same as previous
-                {
-                    for(int i = 0; i < 10000; i++)
-                    {
-                        temp[i] = reversed[i];
-                    }
-                    t = clock();
-                    shell_sort(temp, 10000);
-                    t = clock() - t;
-                    cout << (((float)t)/CLOCKS_PER_SEC) << "seconds\n";
-                }
-                    cout << "	Time for NearlySorted.txt: ";  // same as previous
-                {
-                    for(int i = 0; i < 10000; i++)
-                    {
-                        temp[i] = nearlySorted[i];
-                    }
-                    t = clock();
-                    shell_sort(temp, 10000);
-                    t = clock() - t;
-                    cout << (((float)t)/CLOCKS_PER_SEC) << "seconds\n";
-                }
-                    cout << "	Time for FewUnique.txt: ";  // same as previous
-                {
-                    for(int i = 0; i < 10000; i++)
-                    {
-                        temp[i] = fewUnique[i];
-                    }
-                    t = clock();
-                    shell_sort(temp, 10000);
-                    t = clock() - t;
-                    cout << (((float)t)/CLOCKS_PER_SEC) << "seconds\n";
-                }
-                    break;
-                case '5':  // case for merge sort
-                    cout << "Preforming Merge sort \n";
-                    cout << "	Time for Random.txt: ";  // merge sorts random
-                {
-                    for(int i = 0; i < 10000; i++)  // sets temp array to random array
-                    {
-                        temp[i] = random[i];
-                    }
-                    t = clock();  // reads clock time
-                    merge_sort(temp, 0, 9999);  // merge sorts temp
-                    t = clock() - t;  // calculates differece in clock time
-                    cout << (((float)t)/CLOCKS_PER_SEC) << "seconds\n";  // prints clock time in seconds
-                }
-                    cout << "	Time for Reversed.txt: ";  // same as previous
-                {
-                    for(int i = 0; i < 10000; i++)
-                    {
-                        temp[i] = reversed[i];
-                    }
-                    t = clock();
-                    merge_sort(temp, 0, 9999);
-                    t = clock() - t;
-                    cout << (((float)t)/CLOCKS_PER_SEC) << "seconds\n";
-                }
-                    cout << "	Time for NearlySorted.txt: ";  // same as previous
-                {
-                    for(int i = 0; i < 10000; i++)
-                    {
-                        temp[i] = nearlySorted[i];
-                    }
-                    t = clock();
-                    merge_sort(temp, 0, 9999);
-                    t = clock() - t;
-                    cout << (((float)t)/CLOCKS_PER_SEC) << "seconds\n";
-                }
-                    cout << "	Time for FewUnique.txt: ";  // same as previous
-                {
-                    for(int i = 0; i < 10000; i++)
-                    {
-                        temp[i] = fewUnique[i];
-                    }
-                    t = clock();
-                    merge_sort(temp, 0, 9999);
-                    t = clock() - t;
-                    cout << (((float)t)/CLOCKS_PER_SEC) << "seconds\n";
-                }
-                    break;
-            }			
-        }
-    }while(choice != '0');
-    return 0;
-}
-/*
- void read_file(char * file_name, int * A)
- {
-	ifstream in;
-	string line;
-	in.open(file_name);
- 
-	if(in.is_open())
-	{
- while(getline(in, line, ' '))
- {
- A[i] = line;
- }
- 
-	}
- }
- */
+bool number_array(string red, int *& noms);
 
-// start bubble sort
-void bubble_sort(int A[], int n)  // bubble sort, parameters array A and int n
+int comparisons = 0;
+int exchanges = 0;
+
+void Bubble_Sort(int A[], int n)    //Bubble Sort
 {
-    int temp;
-    
-    for(int i = 1; i < n; i++)
+    int i, j, temp;// defining int variables
+    for(i = 1; i < n; i++)      //number of passes
     {
-        for(int j = 0; j < n-1; j++)
+        for(j = 0; j < n - 1; j++)      //for statement initialized
         {
-            if(A[j] > A[j+1])
+            comparisons++;         //comparison
+            if(A[j] > A[j + 1])     //compare two numbers following eachother
             {
-                temp = A[j];
+                temp = A[j];        //swap A[j] with A[j + 1]
                 A[j] = A[j + 1];
                 A[j + 1] = temp;
+                exchanges++;        //making exchanges within the if statement
             }
         }
     }
+    cout << "Bubble Sort Comparisons: " << comparisons << endl; //console output
+    cout << "Bubble Sort Exchanges: " << exchanges << endl; //console output
+    cout << endl; //space
 }
-// end bubble sort
 
-// start insertion sort
-void insertion_sort(int A[], int n)  // insertion sort, parameters array A and int n
+void Insertion_Sort(int A[], int n)     //Insertion Sort
 {
-    int j, temp;
-    for(int i = 1; i < n; i++)
+    int i, j, element; // defining int variables
+    for(i = 1; i < n; i++) //initalizing for loop
     {
-        temp = A[i];
+        element = A[i];     //placing elements into for loop array
         j = i;
-        
-        while((j > 0) && (A[j - 1] > temp))
+        comparisons++;      //making comparison
+        while ((j > 0) && (A[j - 1] > element))
         {
-            A[j] = A[j - 1];
+            
+            A[j] = A[j - 1];        //shift elements
             j = j - 1;
+            exchanges++;        //making exchanges
+            comparisons++;      //making comparisons
         }
-        A[j] = temp;
+        A[j] = element;         //place element at jth position
     }
+    cout << "Insertion Sort Comparisons: " << comparisons << endl;   //console output
+    cout << "Insertion Sort Exchanges: " << exchanges << endl;       //console output
+    cout << endl; //space
 }
-// end insertion sort
 
-// start quick sort
-int partition(int A[], int low, int high)  // for quick sort, parameters array A, int low, int high
+void swap(int &x, int &y)  //for Quick_Sort function in order to pass by reference not value
 {
-    int pivot = A[low];
-    
-    do
+    int temp; // defining int variable
+    temp = x;
+    x = y;
+    y = temp;
+}
+
+int partition(int a[], int left, int right, int pivotIndex)     //for Quick_Sort
+{
+    int pivot = a[pivotIndex];      //pivot made
+    do // do loop initialized
     {
-        while(A[low] < pivot)
-            low++;
-        
-        while(A[high] > pivot)
-            high--;
-        
-        if(low < high && A[low] != A[high])
-            sswap(&A[low], &A[high]);
+        while (a[left] < pivot) //while loop initialized
+        {
+            left++;     //increase left by one
+            comparisons++;      //making comparisons for left
+        }
+        comparisons++;
+        while (a[right] > pivot)
+        {
+            right--;        //decrease right by one
+            comparisons++;      //making comparisons for right
+        }
+        comparisons++;
+        if (left < right && a[left] != a[right])
+        {
+            swap(a[left], a[right]);        //making a swap with left and right
+            exchanges++;        //making exchanges in the if statement for swap
+        }
         else
-            return high;
-    }while(low < high);
-    
-    return high;
+        {
+            return right;
+        }
+    }
+    while (left < right);
+    return right;
 }
 
-void sswap(int * x, int * y)  // for quick sort, parameters pointer for x and pointer for y
+void Quick_Sort(int a[], int left, int right) //Quick sorting, will call swap and partition function above
 {
-    int temp;
-    temp = *x;
-    *x = *y;
-    *y = temp;
-}
-
-void quick_sort(int A[], int low, int high)  // quick sort, parameters array A, int low, int high
-{
-    int j;
-    if(low < high)
+    if (left < right)
     {
-        j = partition(A, low, high);
-        quick_sort(A, low, j - 1);
-        quick_sort(A, j + 1, high);
+        int pivot = (left + right) / 2;         // middle
+        int pivotNew = partition(a, left, right, pivot);
+        Quick_Sort(a, left, pivotNew - 1);
+        Quick_Sort(a, pivotNew + 1, right);
     }
 }
-// end quick sort
 
-
-// start shell sort
-void shell_sort(int A[], int n) //sorts by insertion
+void Shell_Sort(int A[], int n)//Shell sort
 {
-    int temp, gap, swapped;
-    gap = n / 2;
-    
+    int temp, gap, i;
+    int swapped;
+    gap = n/2;
     do
     {
         do
         {
-            swapped = 0;
-            
-            for(int i = 0; i < n - gap; i++)
+            swapped = 0;        //swapped here is different that the swap function above
+            for(i = 0; i < n - gap; i++)
             {
+                comparisons++;      //comparison within the for loop but before the if statement, same as bubble sort function
                 if(A[i] > A[i + gap])
                 {
                     temp = A[i];
                     A[i] = A[i + gap];
                     A[i + gap] = temp;
                     swapped = 1;
+                    exchanges++;    //making exchanges within the if statement, same as bubble sort function
                 }
             }
-        }while(swapped == 1);
-        
-    }while((gap = gap / 2) >= 1); 
+        }
+        while(swapped == 1);    //set swap equal to 1
+    }
+    while((gap = gap/2) >= 1);
+    cout << "Shell Comparisons: " << comparisons << endl;   //console output
+    cout << "Shell Exchanges: " << exchanges << endl;       //console output
+    cout << endl; //space
 }
-// end shell sort
 
-
-// start merge sort
-void merge(int A[], int low, int high, int mid)
+void merge(int A[], int low, int high, int mid)     //for Merge_Sort
 {
     int i, j, k, C[10000];
-    i = low;
-    j = mid + 1;
-    k = 0;
-    
-    while((i <= mid) && (j <= high))
+    i = low;          //index for first part
+    j = mid + 1;      //index for second part
+    k = 0;            //merge arrays A and B in array C
+    while ((i <= mid) && (j <= high))
     {
-        if(A[i] < A[j])
+        comparisons++;      //making comparisons
+        if (A[i] < A[j])
+        {
             C[k] = A[i++];
+            exchanges++;        //making exchanges
+        }
         else
+        {
             C[k] = A[j++];
-        
+            exchanges++;        //making exchanges
+        }
         k++;
     }
-    
-    while(i <= mid)
+    while (i <= mid)
+    {
         C[k++] = A[i++];
-    
-    while(j <= high)
+        exchanges++;        //making exchanges
+    }
+    while (j <= high)
+    {
         C[k++] = A[j++];
-    
-    for(i = low, j = 0; i <= high; i++, j++)
+        exchanges++;        //making exchanges
+    }
+    for (i = low, j = 0; i < high; i++, j++)
+        //copy array C contents back to array A
+    {
         A[i] = C[j];
+    }
 }
 
-void merge_sort(int A[], int low, int high) //sorts data items into ascending order
+void Merge_Sort(int A[], int low, int high)     //Merge sorting, call to the function above
 {
     int mid;
-    
-    if(low < high)
+    if (low < high)
     {
-        mid = (low + high) / 2;
-        merge_sort(A, low, mid);
-        merge_sort(A, mid + 1, high);
-        merge(A, low, high, mid);
+        mid=(low + high)/2;
+        Merge_Sort(A, low, mid);
+        Merge_Sort(A, mid + 1, high);
+        merge(A, low, high, mid);       //call the function above
     }
-    
+    return;
 }
-// end merge sort
+
+bool number_array(string red, int *& noms)   //reading in the text files into arrays
+{
+    ifstream thisfile;      //input file stream
+    thisfile.open(red.c_str());     //c-style string, open the input file
+    
+    if(!thisfile.is_open())     //if the file fails to open
+    {
+        cout << "File not found" << red << endl;
+        cout << "Incorrect Location \n";
+        cout << endl; //space
+        return false;
+    }
+    string y;       //create a random string
+    string x = " ";     //create a random string
+    while(thisfile.peek()!= EOF)
+        //peek reads and returns the next character without extracting
+        //while this is not equal to end of the file
+    {
+        thisfile >> y;      //read in string y
+        x += y + " ";
+    }
+    thisfile.clear();
+    thisfile.close();       //close the input file
+    
+    vector<string> vertical;        //a vector of string
+    y = "";
+    for( int i = 0; i < x.length();i++)
+    {
+        if (x[i] == ' ')
+        {
+            vertical.push_back(y);
+            y = "";
+        }
+        else
+        {
+            y += x[i];
+        }
+    }
+    if(noms != NULL)        //freeing up memory just in case
+    {
+        delete noms;
+    }
+    noms = new int[vertical.size()];
+    for(int i = 0; i < vertical.size(); i++)
+    {
+        noms[i]= atoi(vertical[i].c_str());
+    }
+    return true;
+}
+
+int main(int argc, const char * argv[])
+{
+    int * Every_nums;
+    string just_names[4];
+    just_names[0] = "FewUnique.txt";
+    cout << "[1] FewUnique.txt" << endl;    //console output
+    just_names[1] = "NearlySorted.txt";
+    cout << "[2] NearlySorted.txt" << endl;     //console output
+    just_names[2] = "Random.txt";
+    cout << "[3] Random.txt" << endl;       //console output
+    just_names[3] = "Reversed.txt";
+    cout << "[4] Reversed.txt" << endl;     //console output
+    cout << endl;  //space
+    
+    for(int i = 0; i < 4; i++) //reading each algorithm one by one
+    {
+        
+        number_array(just_names[i], Every_nums);
+        Bubble_Sort(Every_nums, 10000);
+        
+        number_array(just_names[i], Every_nums);
+        Insertion_Sort(Every_nums, 10000);
+        
+        number_array(just_names[i], Every_nums);
+        Quick_Sort(Every_nums, 0, 9999);
+         cout << "Quick Comparisons: " << comparisons << endl;    //output put here as caused unending loop when placed in quick comparison function
+         cout << "Quick Exchanges: " << exchanges << endl;      //output
+         cout << endl;    //space
+        
+        number_array(just_names[i], Every_nums);
+        Shell_Sort(Every_nums, 10000);
+        
+        number_array(just_names[i], Every_nums);
+        Merge_Sort(Every_nums, 0, 9999);
+        cout << "Merge Comparisons: " << comparisons << endl;     //output put here as just wouldnt work in merge sort function
+        cout << "Merge Exchanges: " << exchanges << endl;      //output
+        cout << endl;   //space
+        
+        
+    }
+    cout << "Above are the Comparisons & Exchanges" << endl; //ending statement
+    return 0;
+}
