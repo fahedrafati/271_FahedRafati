@@ -9,295 +9,287 @@
 //Had a lot of help from abdul, worked with a few partners and a lot of googling
 
 #include <iostream>
-#include <cstdlib>
 #include <fstream>
-#include <string>
+#include <sstream>
 #include <vector>
-#include <algorithm>
+#include <string>
 
 using namespace std;
 
-void Bubble_Sort(int A[], int n);
-void Insertion_Sort(int A[], int n);
-void swap(int &x, int &y);
-int partition(int a[], int left, int right, int pivotIndex);
-void Quick_Sort(int a[], int left, int right);
-void Shell_Sort(int A[], int n);
-void merge(int A[], int low, int high, int mid);
-void Merge_Sort(int A[], int low, int high);
-
-bool number_array(string red, int *& noms);
-
-int comparisons = 0;
-int exchanges = 0;
-
-void Bubble_Sort(int A[], int n)    //Bubble Sort
+void BubbleSort(string *algorithm, const vector <int> vInput, vector <int> &vSort,
+                int &nComparisons, int &nExchanges)
 {
-    int i, j, temp;// defining int variables
-    for(i = 1; i < n; i++)      //number of passes
+    nComparisons = 0;
+    nExchanges = 0;
+    *algorithm = "Bubble Sort";
+    vSort = vInput;
+    
+    int num_elements = vSort.size();
+    int i, j, temp;
+    for (i = 1; i < num_elements; i++) // Number of passes
     {
-        for(j = 0; j < n - 1; j++)      //for statement initialized
+        for (j = 0; j < num_elements - 1; j++)
         {
-            comparisons++;         //comparison
-            if(A[j] > A[j + 1])     //compare two numbers following eachother
+            nComparisons++;
+            if (vSort[j] > vSort[j + 1]) //compare elements after eachother
             {
-                temp = A[j];        //swap A[j] with A[j + 1]
-                A[j] = A[j + 1];
-                A[j + 1] = temp;
-                exchanges++;        //making exchanges within the if statement
+                temp =vSort[j];
+                vSort[j] = vSort[j + 1]; //Swaps data
+                vSort[j + 1] = temp;
+                nExchanges++;
             }
         }
     }
-    cout << "Bubble Sort Comparisons: " << comparisons << endl; //console output
-    cout << "Bubble Sort Exchanges: " << exchanges << endl; //console output
-    cout << endl; //space
 }
 
-void Insertion_Sort(int A[], int n)     //Insertion Sort
+void InsertionSort(string *algorithm, const vector <int> vInput, vector <int> &vSort,
+                   int &nComparisons, int &nExchanges)
 {
-    int i, j, element; // defining int variables
-    for(i = 1; i < n; i++) //initalizing for loop
+    nComparisons = 0;
+    nExchanges = 0;
+    *algorithm = "Insertion Sort";
+    vSort = vInput;
+    
+    int num_elements = vSort.size();
+    int i, j, element;
+    for (i = 1; i < num_elements; i++)
     {
-        element = A[i];     //placing elements into for loop array
+        element = vSort[i];
         j = i;
-        comparisons++;      //making comparison
-        while ((j > 0) && (A[j - 1] > element))
+        while ((j > 0) && (vSort[j - 1] > element)) //Compare
         {
-            
-            A[j] = A[j - 1];        //shift elements
+            nComparisons++;
+            vSort[j] = vSort[j - 1];
             j = j - 1;
-            exchanges++;        //making exchanges
-            comparisons++;      //making comparisons
+            nExchanges++;
         }
-        A[j] = element;         //place element at jth position
-    }
-    cout << "Insertion Sort Comparisons: " << comparisons << endl;   //console output
-    cout << "Insertion Sort Exchanges: " << exchanges << endl;       //console output
-    cout << endl; //space
-}
-
-void swap(int &x, int &y)  //for Quick_Sort function in order to pass by reference not value
-{
-    int temp; // defining int variable
-    temp = x;
-    x = y;
-    y = temp;
-}
-
-int partition(int a[], int left, int right, int pivotIndex)     //for Quick_Sort
-{
-    int pivot = a[pivotIndex];      //pivot made
-    do // do loop initialized
-    {
-        while (a[left] < pivot) //while loop initialized
-        {
-            left++;     //increase left by one
-            comparisons++;      //making comparisons for left
-        }
-        comparisons++;
-        while (a[right] > pivot)
-        {
-            right--;        //decrease right by one
-            comparisons++;      //making comparisons for right
-        }
-        comparisons++;
-        if (left < right && a[left] != a[right])
-        {
-            swap(a[left], a[right]);        //making a swap with left and right
-            exchanges++;        //making exchanges in the if statement for swap
-        }
-        else
-        {
-            return right;
-        }
-    }
-    while (left < right);
-    return right;
-}
-
-void Quick_Sort(int a[], int left, int right) //Quick sorting, will call swap and partition function above
-{
-    if (left < right)
-    {
-        int pivot = (left + right) / 2;         // middle
-        int pivotNew = partition(a, left, right, pivot);
-        Quick_Sort(a, left, pivotNew - 1);
-        Quick_Sort(a, pivotNew + 1, right);
+        vSort[j] = element;
     }
 }
 
-void Shell_Sort(int A[], int n)//Shell sort
+int partition(vector<int>& A, int left, int right, int who) {
+    for (int i = left; i<right; ++i) {
+        if (A[i] <= who) {
+            swap(A[i], A[left]);
+            left++;
+        }
+    }
+    return left - 1;
+}
+
+void QuickSortB( vector <int> &vSort,int left, int right, int &nComparisons, int &nExchanges)
 {
-    int temp, gap, i;
-    int swapped;
-    gap = n/2;
+    int i = left, j = right;
+    int tmp;
+    int pivot = vSort[(left + right) / 2];
+    
+    /* partition */
+    while (i <= j) {
+        //Comparing sorts to pivots
+        while (vSort[i] < pivot)
+        {
+            i++;
+            nComparisons++;
+        }
+        while (vSort[j] > pivot)
+        {
+            j--;
+            nComparisons++;
+        }
+        
+        if (i <= j) {
+            tmp = vSort[i];
+            vSort[i] = vSort[j]; //Exchange
+            vSort[j] = tmp;
+            i++;
+            j--;
+            nExchanges++;
+        }
+    };
+    /* recursion */
+    if (left < j)
+        //Quick Sort left to j
+        QuickSortB(vSort, left, j, nComparisons,nExchanges);
+    
+    if (i < right)
+        //Quick Sort i to right
+        QuickSortB(vSort, i, right, nComparisons, nExchanges);
+}
+
+void QuickSort(string *algorithm, const vector <int> vInput, vector <int> &vSort,
+               int &nComparisons, int &nExchanges)
+{
+    nComparisons = 0;
+    nExchanges = 0;
+    *algorithm = "Quick Sort";
+    vSort = vInput;
+    QuickSortB(vSort, 0, vSort.size() - 1, nComparisons, nExchanges);
+}
+
+void ShellSort(string *algorithm, const vector <int> vInput, vector <int> &vSort,
+               int &nComparisons, int &nExchanges)
+{
+    nComparisons = 0;
+    nExchanges = 0;
+    *algorithm = "Shell Sort";
+    vSort = vInput;
+    
+    int gap = vSort.size() / 2;
+    int swapped, temp;
+    unsigned int i;
     do
     {
         do
         {
-            swapped = 0;        //swapped here is different that the swap function above
-            for(i = 0; i < n - gap; i++)
-            {
-                comparisons++;      //comparison within the for loop but before the if statement, same as bubble sort function
-                if(A[i] > A[i + gap])
+            swapped = 0;
+            for (i = 0; i < (vSort.size() - gap); i++) {
+                nComparisons++;
+                if (vSort[i] > vSort[i + gap])
                 {
-                    temp = A[i];
-                    A[i] = A[i + gap];
-                    A[i + gap] = temp;
+                    temp = vSort[i];
+                    vSort[i] = vSort[i + gap];
+                    vSort[i + gap] = temp;
                     swapped = 1;
-                    exchanges++;    //making exchanges within the if statement, same as bubble sort function
+                    nExchanges++;
                 }
             }
-        }
-        while(swapped == 1);    //set swap equal to 1
-    }
-    while((gap = gap/2) >= 1);
-    cout << "Shell Comparisons: " << comparisons << endl;   //console output
-    cout << "Shell Exchanges: " << exchanges << endl;       //console output
-    cout << endl; //space
+        } while (swapped == 1);
+    } while ((gap = gap / 2) >= 1);
 }
 
-void merge(int A[], int low, int high, int mid)     //for Merge_Sort
+
+void merge(vector <int> &vSort, const int low, const int mid, const int high, int &nComparisons, int &nExchanges)
 {
-    int i, j, k, C[10000];
-    i = low;          //index for first part
-    j = mid + 1;      //index for second part
-    k = 0;            //merge arrays A and B in array C
-    while ((i <= mid) && (j <= high))
+    // Variables declaration.
+    int * b = new int[high + 1 - low];
+    int h, i, j, k;
+    h = low;
+    i = 0;
+    j = mid + 1;
+    // Merges the two array's into b[] until the first one is finish
+    while ((h <= mid) && (j <= high))
     {
-        comparisons++;      //making comparisons
-        if (A[i] < A[j])
+        nComparisons++;
+        //comparisons
+        if (vSort[h] <= vSort[j])
         {
-            C[k] = A[i++];
-            exchanges++;        //making exchanges
+            b[i] = vSort[h];
+            h++;
         }
         else
         {
-            C[k] = A[j++];
-            exchanges++;        //making exchanges
+            b[i] = vSort[j];
+            j++;
         }
-        k++;
+        i++;
     }
-    while (i <= mid)
+    // Completes the array filling in it the missing values
+    if (h>mid)
     {
-        C[k++] = A[i++];
-        exchanges++;        //making exchanges
+        for (k = j; k <= high; k++)
+        {
+            b[i] = vSort[k];
+            i++;
+        }
     }
-    while (j <= high)
+    else
     {
-        C[k++] = A[j++];
-        exchanges++;        //making exchanges
+        for (k = h; k <= mid; k++)
+        {
+            b[i] = vSort[k];
+            i++;
+        }
     }
-    for (i = low, j = 0; i < high; i++, j++)
-        //copy array C contents back to array A
+    // Prints into the original array
+    for (k = 0; k <= high - low; k++)
     {
-        A[i] = C[j];
+        vSort[k + low] = b[k]; //exchange
+        nExchanges++;
     }
+    delete[] b;
 }
 
-void Merge_Sort(int A[], int low, int high)     //Merge sorting, call to the function above
+void MergeSortB(vector <int> &vSort, const int low, const int high, int &nComparisons, int &nExchanges)		// Recursive sort ...
 {
     int mid;
     if (low < high)
     {
-        mid=(low + high)/2;
-        Merge_Sort(A, low, mid);
-        Merge_Sort(A, mid + 1, high);
-        merge(A, low, high, mid);       //call the function above
+        mid = (low + high) / 2;
+        MergeSortB(vSort, low, mid, nComparisons, nExchanges);
+        MergeSortB(vSort, mid + 1, high, nComparisons, nExchanges);
+        merge(vSort, low, mid, high, nComparisons, nExchanges);
     }
-    return;
+}
+void MergeSort(string *algorithm, const vector <int> vInput, vector <int> &vSort,
+               int &nComparisons, int &nExchanges)
+{
+    nComparisons = 0;
+    nExchanges = 0;
+    *algorithm = "Merge Sort";
+    vSort = vInput;
+    MergeSortB(vSort, 0, vSort.size() - 1, nComparisons, nExchanges);
 }
 
-bool number_array(string red, int *& noms)   //reading in the text files into arrays
+bool write_out_the_vector_to_file(vector<int> my_vector, string * my_file_name)
 {
-    ifstream thisfile;      //input file stream
-    thisfile.open(red.c_str());     //c-style string, open the input file
-    
-    if(!thisfile.is_open())     //if the file fails to open
-    {
-        cout << "File not found" << red << endl;
-        cout << "Incorrect Location \n";
-        cout << endl; //space
-        return false;
-    }
-    string y;       //create a random string
-    string x = " ";     //create a random string
-    while(thisfile.peek()!= EOF)
-        //peek reads and returns the next character without extracting
-        //while this is not equal to end of the file
-    {
-        thisfile >> y;      //read in string y
-        x += y + " ";
-    }
-    thisfile.clear();
-    thisfile.close();       //close the input file
-    
-    vector<string> vertical;        //a vector of string
-    y = "";
-    for( int i = 0; i < x.length();i++)
-    {
-        if (x[i] == ' ')
-        {
-            vertical.push_back(y);
-            y = "";
-        }
-        else
-        {
-            y += x[i];
-        }
-    }
-    if(noms != NULL)        //freeing up memory just in case
-    {
-        delete noms;
-    }
-    noms = new int[vertical.size()];
-    for(int i = 0; i < vertical.size(); i++)
-    {
-        noms[i]= atoi(vertical[i].c_str());
-    }
+    ofstream out;
+    out.open(*my_file_name);
+    unsigned int i;
+    for (i = 0; i<my_vector.size(); i++)
+        out << my_vector[i] << endl;
+    out.clear();
+    out.close();
     return true;
 }
 
-int main(int argc, const char * argv[])
+typedef void(*sorter_function)(string *algorithm, const vector <int> input_table, vector <int> &sorted_table,
+int &comparison_count, int &swap_count);
+
+
+sorter_function sort_function_list[] = { BubbleSort, InsertionSort, QuickSort, ShellSort, MergeSort, NULL}; // sort_bubble, sort_insertion, sort_quick, sort_shell, sort_merge
+
+
+int main()
 {
-    int * Every_nums;
-    string just_names[4];
-    just_names[0] = "FewUnique.txt";
-    cout << "[1] FewUnique.txt" << endl;    //console output
-    just_names[1] = "NearlySorted.txt";
-    cout << "[2] NearlySorted.txt" << endl;     //console output
-    just_names[2] = "Random.txt";
-    cout << "[3] Random.txt" << endl;       //console output
-    just_names[3] = "Reversed.txt";
-    cout << "[4] Reversed.txt" << endl;     //console output
-    cout << endl;  //space
-    
-    for(int i = 0; i < 4; i++) //reading each algorithm one by one
-    {
-        
-        number_array(just_names[i], Every_nums);
-        Bubble_Sort(Every_nums, 10000);
-        
-        number_array(just_names[i], Every_nums);
-        Insertion_Sort(Every_nums, 10000);
-        
-        number_array(just_names[i], Every_nums);
-        Quick_Sort(Every_nums, 0, 9999);
-         cout << "Quick Comparisons: " << comparisons << endl;    //output put here as caused unending loop when placed in quick comparison function
-         cout << "Quick Exchanges: " << exchanges << endl;      //output
-         cout << endl;    //space
-        
-        number_array(just_names[i], Every_nums);
-        Shell_Sort(Every_nums, 10000);
-        
-        number_array(just_names[i], Every_nums);
-        Merge_Sort(Every_nums, 0, 9999);
-        cout << "Merge Comparisons: " << comparisons << endl;     //output put here as just wouldnt work in merge sort function
-        cout << "Merge Exchanges: " << exchanges << endl;      //output
-        cout << endl;   //space
-        
+    int curInputNum = 0;
+    string curOutputName;
+    const string input_files[] = { "FewUnique.txt","NearlySorted.txt","Random.txt","Reversed.txt", "" };
+    for (curInputNum=0; input_files[curInputNum].length() > 0; curInputNum++) {
+        ifstream in;
+        string line = "";
+        int sortFuncNum = 0;
+        vector<int> dataSet;
+        in.open(input_files[curInputNum]);
+        if (!in.is_open())
+        {
+            cout << "The read file " << input_files[curInputNum] << " could not be opened.\nCheck the location.\n";
+            return false;
+        }
+        dataSet.clear();
+        while (getline(in, line))
+        {
+            istringstream iss(line);
+            int n;
+            
+            while (iss >> n) //Removes white space from integers
+            {
+                dataSet.push_back(n);
+            }
+        }
+        in.clear(), in.close();
+        for (sortFuncNum = 0; sort_function_list[sortFuncNum] != 0x0; sortFuncNum++) {
+            string sortFuncName; 
+            int nComparisons = 0; 
+            int nSwaps = 0;
+            vector<int> resultSet;
+            (sort_function_list[sortFuncNum])(&sortFuncName, dataSet, resultSet, nComparisons, nSwaps);
+            cout << input_files[curInputNum] << " " << sortFuncName << " results: " << "Comparisons = " << nComparisons << ", Swaps = " << nSwaps << endl;
+            curOutputName = "Result_" + sortFuncName + "_" + input_files[curInputNum];
+            write_out_the_vector_to_file(resultSet, &curOutputName);
+            
+        }
         
     }
-    cout << "Above are the Comparisons & Exchanges" << endl; //ending statement
+    system("PAUSE"); //Pause
     return 0;
 }
