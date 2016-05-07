@@ -1,0 +1,5 @@
+tatttttaaaaattaaataaattataaaat: No
+gctgaaaaaatttttatttattttataaaa: No
+cctttacgacgaacaagagggcgcagtggc: Yes
+attgacaacttccgacctcgacacggaagg: Yes
+gcggtaggtcgtaccccttttgaggggaag: Yes
